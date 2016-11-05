@@ -4,5 +4,6 @@
 *.dvi
 *.out
 *.synctex
+*.synctex.gz
 *.log
 *.blg
