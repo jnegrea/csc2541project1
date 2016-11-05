@@ -99,7 +99,7 @@ In [1], the actor is supposed to be allowed a fixed number, $K$, atomic actions 
 \[\PP(\mathbf{a}|s_0) = \sum_{\mathbf{s}\in \Ss^{K-1}} \PP(a_K|\mathbf{s},\mathbf{a}_{K-1}) \prod_{k=1}^{K-1} \PP(a_k|\mathbf{s}_{k-1},\mathbf{a}_{k-1})\PP(s_{k}|\mathbf{s}_{k-1},\mathbf{a}_k)\]
 
 One way to generalize the above problem would place the actor either in a fixed or random position (not of its choosing) and allow it a fixed number of `planning stage' actions to position itself before the objective is revealed. 
-The this example may be viewed as the case in this framework where the actor is almost surely able to position itself in the state of its choosing within the planning stage. A second generalization of the problem would involve non-uniform, possibly random rewards. We will consider this case in section 4, where we demonstrate that each such problems effectively equivalent to a game with unit rewards. 
+The this example may be viewed as the case in this framework where the actor is almost surely able to position itself in the state of its choosing within the planning stage. A second generalization of the problem would involve non-uniform, possibly random rewards. We will consider this case in section 6, where we demonstrate that each such problems effectively equivalent to a game with unit rewards. 
 
 We explicitly define the empowerment and the expected reward for this problem below.
 
@@ -166,9 +166,10 @@ Thus setting $g'(u^\star)=0$, assuming $p\neq q$ would imply
 \end{align*}
 Since $H$ is a concave function, $g$ is non-negative on [0,1]. Also, $g(0)=g(1)=0$. Hence $g$ is maximized at $u^\star$. If $p=q$ then the empowerment is uniformly $0$.
 
-\subsection{A Worked Counterexample}
-For empowerment empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes a counter example to this: 
+\subsection{Sub-Optimality Example}
+For empowerment empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes a counter example to this. The first example was found by guess-and-check, and the second example was found by finding the locally maximal performance gap when searching from the first example. 
 
+\subsubsection{Example 1}
 Suppose $p_0=1$, $q_0=\frac{1}{2}$, $p_1=\frac{3}{4}$, and $q_1 = \frac{1}{8}$. Then the expected rewards are:
 \begin{align*}
 \Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4}\\
@@ -183,9 +184,10 @@ However, according to the above formulae, the empowerments are
 \end{align*}
 Hence the empowerment optimal strategy is to start in state $0$.
 
-In fact, in this class of two state problems with two pure actions a (locally) supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$.
+\subsubsection{Example 2}
+Searching starting from Example 1, a locally supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$.
 
-This counter example shows that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B).
+These counter examples shows that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B).
 \section{Weighted Objectives}
 The focus of this paper now shifts to non-unit reward systems. One demonstrates that problem of determining the expected reward maximizing strategy for such problems can formulated as an expected reward optimization under a re-weighted distribution of the target state.\\
 
@@ -194,7 +196,7 @@ Suppose that the rewards received for various target states are non uniform. As 
 Let the pay-off for achieving the the target state be $m(t)$. 
 Define the probability measure $\tilde{\pi}$ by
 \[\tilde{\pi}(t)=\frac{m(t)\pi(t)}{\sum_{u\in\Ss} m(u)\pi(u)}\] 
-Then the optimal strategy in terms of expected reward is maximal $\tilde{\pi}$-empowerment. 
+Then the optimal strategy in terms of expected reward is equivalent to the optimal expected reward strategy when objectives are drawn from $\tilde{\pi}$ under $0$-$1$ reward.
 \end{theorem}
 \begin{proof}
 The expected reward for the problem with weights $m$ and objective probabilities $\pi$ differs from the expected reward for the problem with unit rewards and objective probabilities $\tilde{\pi}$ by a multiplicative constant. Hence any optimal strategy for one of these problems must be optimal for the other. 
@@ -202,7 +204,7 @@ The expected reward for the problem with weights $m$ and objective probabilities
 \begin{theorem} 
 Suppose that rewards received for various target states are stochastic. Particularly, suppose that the reward received when the objective is $t\in\Ss$, $R|t$, is distributed as $(R|t)\sim m(r|t)$. As before, let $\pi$ be the probability distribution over objective states. Define the probability measure $\tilde{\pi}$ by
 \[\tilde{\pi}(t)=\frac{\EE(R|t)\pi(t)}{\EE(R)}\] 
-Then the optimal strategy in terms of expected reward is maximal $\tilde{\pi}$-empowerment. 
+Then the optimal strategy in terms of expected reward is equivalent to the optimal expected reward strategy when objectives are drawn from $\tilde{\pi}$ under $0$-$1$ reward.
 \end{theorem}
 The proof is the same as for the above theorem.
 

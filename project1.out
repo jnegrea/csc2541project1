@@ -6,6 +6,8 @@
 \BOOKMARK [1][-]{section.4}{Sub-Optimality of Empowerment Strategies}{}% 6
 \BOOKMARK [2][-]{subsection.4.1}{Expected Reward Optimal Solution}{section.4}% 7
 \BOOKMARK [2][-]{subsection.4.2}{Empowerment Optimal Solution}{section.4}% 8
-\BOOKMARK [2][-]{subsection.4.3}{A Worked Counterexample}{section.4}% 9
-\BOOKMARK [1][-]{section.5}{Weighted Objectives}{}% 10
-\BOOKMARK [1][-]{section.6}{Learning from Experience}{}% 11
+\BOOKMARK [2][-]{subsection.4.3}{Sub-Optimality Example}{section.4}% 9
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Example 1}{subsection.4.3}% 10
+\BOOKMARK [3][-]{subsubsection.4.3.2}{Example 2}{subsection.4.3}% 11
+\BOOKMARK [1][-]{section.5}{Weighted Objectives}{}% 12
+\BOOKMARK [1][-]{section.6}{Learning from Experience}{}% 13
