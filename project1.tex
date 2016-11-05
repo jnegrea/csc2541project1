@@ -61,14 +61,13 @@
 Intrinsically-motivated reinforcement learning aims to address the question of how actors are or should be motivated in the absence of an external reward system. 
 Among possible behavioural strategies, empowerment-based reasoning is a novel and intuitive strategy for intrinsically motivated reinforcement learning. 
 However, it is unclear from the literature whether empowerment-based reasoning is Bayes-optimal.
-The first contributions of this work are to pose a general reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of Empowerment-based strategies relative to the Bayes-optimal strategies. 
-Empowerment will be shown to be suboptimal when the Bayesian loss function is the (negative) Expected Reward. 
+The first contributions of this work are to pose a general intrinsically motivated reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of empowerment-based strategies relative to the Bayes-optimal strategies both. 
+Empowerment will be shown to be suboptimal when the Bayesian loss function is the (negative) expected reward. 
 A secondary contribution of this work is to demonstrate that Bayes-optimal strategies  for problems with non-unit rewards may be determined by examining related problems with unit rewards.  The final contribution of this work will present a simple method for an actor to learn the distributions of objectives and rewards through multiple trials and update his Bayes-optimal strategy accordingly. 
 \end{abstract}
 
 \section{Introduction}
-\subsection{Reinforcement Learning and Intrinsically Motivated Learning Background}
-Reinforcement Learning is the process by which an agent learns about an environment through interaction with the environment in order to discover how to achieve a prescribed goal. Often the agent is conceptualized to interact with the environment across a discrete time horizon. Two common formulations considered are a sequence of \textit{episodes} each executed over a finite time horizon, and a single episode executed over a possibly infinite time horizon. The agent's goal is usually assumed to be to maximize its expected reward or expected discounted reward. The optimal strategy in such a formulation then may be determined by the Bellman optimality equations \cite{sutton1998reinforcement}. Reinforcement learning has been successfully applied to a variety of problems in robotics \cite{mcallister2016data,finn2016deep,christiano2016transfer}, video game A.I. \cite{mnih2015human}, and medical decision making \cite{krishnan2016structured}. A key component of a reinforcement learning problem in all of these scenarios is that the mechanism by which the actor receives rewards is pre prescribed, though it may not be known \textit{a priori} by the actor. \color{red} It is not clear to me if the stochastic effects of actions on the environment is assumed to be known to the user or must be learned like the reward system.\color{black}
+Reinforcement Learning is the process by which an agent learns about an environment through interaction with the environment in order to discover how to achieve a prescribed goal. Often the agent is conceptualized to interact with the environment across a discrete time horizon. Two common formulations considered are a sequence of \textit{episodes} each executed over a finite time horizon, and a single episode executed over a possibly infinite time horizon. The agent's goal is usually assumed to be to maximize its expected reward or expected discounted reward. The optimal strategy in such a formulation then may be determined by the Bellman optimality equations \cite{sutton1998reinforcement}. Reinforcement learning has been successfully applied to a variety of problems in robotics \cite{mcallister2016data,finn2016deep,christiano2016transfer}, video game A.I. \cite{mnih2015human}, and medical decision making \cite{krishnan2016structured}. A key component of a reinforcement learning problem in all of these scenarios is that the mechanism by which the actor receives rewards is fixed and pre-prescribed, though it may not be known \textit{a priori} by the actor.
 
 Intrinsically motivated reinforcement learning aims to relax the assumption that the reward system is specified in advance (though still not known to the actor). The focus is shifted to how to best prepare for an unknown future goal/reward system. Most techniques for intrinsically motivated learning approach the problem using heuristic metrics, aiming to maximize notions of dependence between the actions taken and the resultant state. These methods may be deemed unsatisfying as it is unclear whether these types of strategies are guaranteed to perform well for goals/rewards which are likely to be specified. Commonly used examples, such as empowerment, take no heed of the process by which future goals/rewards will be constructed. This renders such methods unable to learn about this aspect of the environment and improve their preparation strategies in an episodic framework.    
 
@@ -78,55 +77,54 @@ In contrast to the \textit{ad hoc} heuristics, which dominate the intrinsic moti
 
 We consider the natural strategy in such a framework to be expected reward maximisation. The Bayesian loss function is then the negative expected reward, where expectation is taken over the resultant state, conditional on the initial state and the prescribed goal/reward under the assumption that the actor will make the minimum-loss action. The Bayesian risk function is the expected loss, where expectation is taken over the reward to be prescribed, conditional on the initial state. The Bayes risk is then equivalent to the total expectation of the reward conditional on the initial state (expectation here is taken jointly over random reward and the realized resultant state). 
 
+This work initially assumes that the distribution from which goals are selected and the distribution of the resultant state given the initial state and the actions are known. The problem could be generalized to relax this condition. Some results regarding learning this distribution are presented in \cite{depeweg2016learning}. We present a novel framework for learning these distributions in an episodic framework. We currently make no structural or spacial assumptions about the available actions nor about the distributions of rewards or actions. We note, however, that in specific applications such assumptions, when appropriate, will greatly increase the ability of the system to learn and will significantly reduce computational complexity.
+
+As the actor is uncertain of what his goal will be, any reasonable strategy for selecting the starting state, $s_0$, will need to balance the following meta-objectives:
+\begin{enumerate}[(A)]
+\item The actor should be able to exert control over the terminal state
+\item The actor should be able to explore a wide range of states 
+\item The actor should be able to learn the distribution of objectives (and that of rewards if applicable) and the stochastic effects of actions in an episodic framework
+\end{enumerate}
+Strategies discussed in the literature, such as vanilla empowerment \cite{mohamed2015variational, salge2014empowerment, chentanez2004intrinsically} aim to address (A) and (B) above, but provide no means by which to address (C). 
+The Bayesian decision theory formulation we define does allow learning of objective and reward distributions and the random impact of actions through repeated trials as well accomplishing the other objectives.
 
 
-
-\subsection{A Simple Yet General Unknown Objective Problem}
+\section{A Simple Yet General Unknown Objective Problem}
 Suppose an actor is able to traverse a \textit{finite} state space, $\Ss$. 
 The actor may position itself at any initial state, $s_0\in \Ss$. 
 The actor will then be given a target state, $t\in \Ss$, to which it must travel, chosen randomly from some distribution, $\pi(t)$. 
 The action(s) taken by the actor will be sampled from a (possibly degenerate) distribution, which it may choose from a class of viable action distributions. 
 The resultant state, $s_1\in\Ss$, will depend on the action(s) taken, though not deterministically.  
-In [1], the actor is supposed to be allowed a fixed number, $K$, atomic actions in which it may accomplish its goal. 
-Since the actions are not explicitly conditioned on the intermediate states, then without loss of generality, the paper will consider the possible combinations of $K$ atomic actions in such situations as a single atomic action in a larger space of candidate actions. \color{red} Show how one can express multiple action joint distribution as a single random action. \color{black}
-If the actor succeeds in reaching the target state it receives a unit reward otherwise there is no reward.
+In [1], the actor is supposed to be allowed a fixed number, $K$, atomic actions in which it may accomplish its goal. If the actor succeeds in reaching the target state it receives a unit reward otherwise there is no reward. Since the actions are not explicitly conditioned on the intermediate states, then without loss of generality, the paper will consider the possible combinations of $K$ atomic actions in such situations as a single atomic action in a larger space of candidate actions. Even if the later actions are dependent on the intermediate states, we may view the combination actions and intermediate states as a single action in a larger space of actions which has a distribution based on the intermediate states:
+\[\PP(\mathbf{a}|s_0) = \sum_{\mathbf{s}\in \Ss^{K-1}} \PP(a_K|\mathbf{s},\mathbf{a}_{K-1}) \prod_{k=1}^{K-1} \PP(a_k|\mathbf{s}_{k-1},\mathbf{a}_{k-1})\PP(s_{k}|\mathbf{s}_{k-1},\mathbf{a}_k)\]
 
 One way to generalize the above problem would place the actor either in a fixed or random position (not of its choosing) and allow it a fixed number of `planning stage' actions to position itself before the objective is revealed. 
-The focus of this paper may be viewed as the case in this framework where the actor is almost surely able to position itself in the state of its choosing within the planning stage.
+The this example may be viewed as the case in this framework where the actor is almost surely able to position itself in the state of its choosing within the planning stage. A second generalization of the problem would involve non-uniform, possibly random rewards. We will consider this case in section 4, where we demonstrate that each such problems effectively equivalent to a game with unit rewards. 
 
-A second generalization of the problem would involve non-uniform, possibly random rewards. 
+We explicitly define the empowerment and the expected reward for this problem below.
 
-This work assumes that the distribution of the resultant state given the initial state and the actions are known. The problem could be generalized to relax this condition. Some results regarding learning this distribution are presented in \cite{depeweg2016learning}.
-
-As the actor is uncertain of what his goal will be, any reasonable strategy for selecting the starting state, $s_0$, will aim to balance the following meta-objectives:
-\begin{enumerate}[(A)]
-\item The actor should be able to exert control over the terminal state
-\item The actor should be able to explore a wide range of states 
-\item The actor should be able to learn the distribution of objectives (and that of rewards if applicable) over repeated games 
-\end{enumerate}
-Strategies discussed in the literature, such as vanilla empowerment \cite{mohamed2015variational, salge2014empowerment, chentanez2004intrinsically} aim to address (A) and (B) above, but provide no means by which to address (C). 
-The generalized empowerment introduced here will be shown to allow Bayesian learning of objective and reward distributions as well accomplishing the other objectives.
-\section{Empowerment, and Expected Reward}
 \subsection{Empowerment}
 The empowerment of $s\in\mathcal{S}$ is defined as the maximum over viable action distributions of the mutual information of action random variable and the terminal state random variable, $S_1$.
-\[\Ee(s)=\max_{(A|s)\sim\omega\in\Omega_s}\Ii(A,S_1|S)=\max_{(A|s)\sim\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]\]
+\[\Ee(s)=\max_{(A|s)\sim\omega\in\Omega_s}\Ii(A,S_1|S)=\max_{(A|s)\sim\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]=\max_{(A|s)\sim\omega\in\Omega_s}\EE\left[\log\frac{p(S_1|s,A)}{p(S_1|s)}\right] \]
 Where the expectation is taken with respect to the joint distribution of the action and the resultant state, $(A,S_1)$ conditional on the starting state, $s$, for a fixed choice of $\omega$ --- the distribution of the action given the starting state. 
 \subsection{Expected Reward}
-The Expected Reward when starting in the state of $s\in\mathcal{S}$ is defined assuming that once the goal state is revealed the actor will perform the action which is most likely to allow it to achieve its goal:
+The expected reward when starting in the state of $s\in\mathcal{S}$ is defined assuming that once the goal state is revealed the actor will perform the action which is most likely to allow it to achieve its goal:
 \[\Rr(s) = \sum_{t\in\Ss} \pi(t) \max_{\omega\in\Omega_s} p(t|s,a_t)\omega(a_t|s)\]
-\subsection{Computational Complexity}
-In order to determine the optimal initial state for either Empowerment or Expected Reward, one must compute the empowerment/expected reward of every state. Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the atomic actions. 
+\section{Computational Complexity of Expected Reward and Empowerment}
+In order to determine the optimal initial state for either empowerment or expected reward, one must compute the empowerment/expected reward of every state. Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the atomic actions. 
 
-To determine the complexity of finding the Expected Reward optimal initial state, one notices that $\max_{\omega\in\Omega_s} p(t|s,a)\omega(a|s) = \max_{1\leq j \leq M} p(t|s,a_j)$, since the left problem is a linear program and the basic solutions are the pure strategies. The right problem has run time $O(M)$ for a fixed target state $t$ and initial state $s$. Since this must be computed for every initial state and every target terminal state, the total complexity to find the Expected Reward maximizing initial state is $O(M\cdot N^2)$. 
+To determine the complexity of finding the expected reward optimal initial state, one notices that $\max_{\omega\in\Omega_s} p(t|s,a)\omega(a|s) = \max_{1\leq j \leq M} p(t|s,a_j)$, since the left problem is a linear program and the basic solutions are the pure strategies. The right problem has run time $O(M)$ for a fixed target state $t$ and initial state $s$. Since this must be computed for every initial state and every target terminal state, the total complexity to find the expected reward maximizing initial state is $O(M\cdot N^2)$. 
 
-To determine the complexity of finding the Empowerment optimal initial state, one notes that the mutual information is concave \cite{braverman2011information} in $\omega$ for each candidate initial state. Thus for a particular candidate initial state, computing the Empowerment is equivalent to solving an $M-1$ dimensional convex optimization problem. Suppose that the complexity of this is $\mathfrak{c}(M-1)$. As this must be done for every possible initial state, the total complexity to find the Empowerment maximizing initial state is $O(\mathfrak{c}(M-1)\cdot N)$. 
+To determine the complexity of finding the empowerment optimal initial state, one notes that the mutual information is concave \cite{braverman2011information} in $\omega$ for each candidate initial state. Computing the mutual information for a candidate action distribution and a fixed initial state involves summation of $MN$ logarithmic terms, each with $M$ terms to be summed in the denominator. There are only $N$ distinct denominators which are each repeated $M$ times. Hence the time to compute the mutual information is $O((M+1)N)=O(MN)$ for a particular candidate initial state and candidate action. Computing the empowerment is then equivalent to solving an $M-1$ dimensional convex optimization problem where the objective function has $O(MN)$ time to compute.  Suppose that the complexity of solving a convex optimization problem with dimensionality $D$ and time to compute the objective function $E$ is $O(\mathfrak{c}(D,E))$. As this must be done for every possible initial state, the total complexity to find the empowerment maximizing initial state is $O(\mathfrak{c}(M,MN)\cdot N)$. 
 
-One can definitively say that holding the number of pure actions constant, Empowerment maximization is asymptotically less complex than Expected Reward maximization in the number of states. The complexity of solving a convex optimization problem is dependent on the algorithm used. If the algorithm used for convex optimization is superlinear in the dimensionality then, holding the number of states fixed, Expected Reward is asymptotically less complex than Empowerment maximization with respect to the number of pure actions. If the algorithm used for convex optimization is linear (sublinear) in the dimensionality then, holding the number of states fixed, Expected Reward is asymptotically equally as complex (more complex than) Empowerment maximization with respect to the number of pure actions.
-\section{Sub-Optimality of Empowerment}
+%One can definitively say that holding the number of pure actions constant, empowerment maximization is asymptotically less complex than expected reward maximization in the number of states. The complexity of solving a convex optimization problem is dependent on the algorithm used. If the algorithm used for convex optimization is superlinear in the dimensionality then, holding the number of states fixed, expected reward is asymptotically less complex than empowerment maximization with respect to the number of pure actions. If the algorithm used for convex optimization is linear (sublinear) in the dimensionality then, holding the number of states fixed, expected reward is asymptotically equally as complex (more complex than) empowerment maximization with respect to the number of pure actions.
+
+Since $\mathfrak{c}$ must be at least linear in its second argument and monotone increasing in its second argument, maximizing expected reward is asymptotically less costly than maximizing empowerment. Even in the smallest possible non-degenerate intrinsic motivation problem, as will be seen below, the derivation of the expected reward maximizing strategy is far less difficult than derivation of the empowerment maximizing strategy.
+\section{Sub-Optimality of Empowerment Strategies}
 Let $\Ss=\{0,1\}$, $A_p=\left[\begin{matrix} p_0 & 1-p_0 \\ p_1 & 1-p_1\end{matrix}\right]$, and $A_q=\left[\begin{matrix} q_0 & 1-q_0 \\ q_1 & 1-q_1\end{matrix}\right]$. Let $\omega_u$ be the action distribution which selects action $a_p$ with probability $u$ and $a_q$ with probability $(1-u)$. When an action, $a_\star$, is taken the actor transitions according to the corresponding Markov kernel, $A_\star$. Let $\Omega=\{\omega_u:u\in[0,1]\}$. Suppose the goal state is chosen uniformly from $\Ss$.
 
 \subsection{Expected Reward Optimal Solution}
-First one will derive the Expected Reward optimal strategy. To this end, one first notes that for a fixed initial state, once the goal state is known the actor's will move according to the Markov kernel which has higher probability to reach the goal state. If both kernels yield the same probability then the actor is indifferent between them. Let $\Rr(i)$ denote the Expected Reward when starting in state $i$. Then
+First one will derive the expected reward optimal strategy. To this end, one first notes that for a fixed initial state, once the goal state is known the actor's will move according to the Markov kernel which has higher probability to reach the goal state. If both kernels yield the same probability then the actor is indifferent between them. Let $\Rr(i)$ denote the expected reward when starting in state $i$. Then
 \begin{align*}
 \Rr(i) 
 	&= \frac{1}{2} \max(p_i,q_i) +\frac{1}{2} \max(1-p_i,1-q_i)\\
@@ -136,10 +134,10 @@ First one will derive the Expected Reward optimal strategy. To this end, one fir
 		\end{cases}\\
 	&=\frac{1}{2}(1+\vert p_i - q_i \vert) 	
 \end{align*}
-Hence, in this scenario, the Expected Reward maximizing strategy is to start in the state which has the highest discrepancy between the corresponding possible transition distributions. This is the state that maximizes $\vert p_i-q_i\vert$.
+Hence, in this scenario, the expected reward maximizing strategy is to start in the state which has the highest discrepancy between the corresponding possible transition distributions. This is the state that maximizes $\vert p_i-q_i\vert$.
 
-\subsection*{Empowerment Optimal Solution}
-One now derives the Empowerment optimal strategy. 
+\subsection{Empowerment Optimal Solution}
+One now derives the empowerment optimal strategy. 
 \begin{align*}
 \Ee(i) 
 	&= \max_{u\in [0,1]}\bigg[up_i \log \frac{p_i}{up_i+(1-u)q_i}\\
@@ -169,34 +167,34 @@ Thus setting $g'(u^\star)=0$, assuming $p\neq q$ would imply
 Since $H$ is a concave function, $g$ is non-negative on [0,1]. Also, $g(0)=g(1)=0$. Hence $g$ is maximized at $u^\star$. If $p=q$ then the empowerment is uniformly $0$.
 
 \subsection{A Worked Counterexample}
-For Empowerment Maximization to be equivalent to Expected Reward Maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes a counter example to this: 
+For empowerment empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes a counter example to this: 
 
 Suppose $p_0=1$, $q_0=\frac{1}{2}$, $p_1=\frac{3}{4}$, and $q_1 = \frac{1}{8}$. Then the expected rewards are:
 \begin{align*}
 \Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4}\\
 \Rr(1) &= \frac{1}{2}\left(1+\left(\frac{3}{4}-\frac{1}{8}\right)\right)=\frac{13}{16}
 \end{align*}
-Hence the Expected Reward Optimal Strategy is to start in state $1$.
+Hence the expected reward optimal strategy is to start in state $1$.
 
 However, according to the above formulae, the empowerments are
 \begin{align*}
 \Ee(0)=0.223143551\\
 \Ee(1)=0.216016789 
 \end{align*}
-Hence the Empowerment Optimal Strategy is to start in state $0$.
+Hence the empowerment optimal strategy is to start in state $0$.
 
-In fact, in this class of two state problems with two pure actions a (locally) supremal gap between the expected reward of the Expected Reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the Empowerment optimal Strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$.
+In fact, in this class of two state problems with two pure actions a (locally) supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$.
 
-This counter example shows that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from Empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B).
+This counter example shows that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B).
 \section{Weighted Objectives}
-The focus of this paper now shifts to non-unit reward systems. One demonstrates that problem of determining the Expected Reward maximizing strategy for such problems can formulated as an Expected Reward optimization under a re-weighted distribution of the target state.\\
+The focus of this paper now shifts to non-unit reward systems. One demonstrates that problem of determining the expected reward maximizing strategy for such problems can formulated as an expected reward optimization under a re-weighted distribution of the target state.\\
 
 \begin{theorem}
 Suppose that the rewards received for various target states are non uniform. As before, let $\pi$ be the probability distribution over objective states. 
 Let the pay-off for achieving the the target state be $m(t)$. 
 Define the probability measure $\tilde{\pi}$ by
 \[\tilde{\pi}(t)=\frac{m(t)\pi(t)}{\sum_{u\in\Ss} m(u)\pi(u)}\] 
-Then the optimal strategy in terms of Expected Reward is maximal $\tilde{\pi}$-empowerment. 
+Then the optimal strategy in terms of expected reward is maximal $\tilde{\pi}$-empowerment. 
 \end{theorem}
 \begin{proof}
 The expected reward for the problem with weights $m$ and objective probabilities $\pi$ differs from the expected reward for the problem with unit rewards and objective probabilities $\tilde{\pi}$ by a multiplicative constant. Hence any optimal strategy for one of these problems must be optimal for the other. 
