@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.1)  4 NOV 2016 12:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.1)  4 NOV 2016 18:06
 entering extended mode
 **./project1.tex
 (project1.tex
@@ -530,7 +530,10 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
 
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
-LaTeX Font Info:    Try loading font information for U+euf on input line 111.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [2]
+LaTeX Font Info:    Try loading font information for U+euf on input line 120.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\ueuf.fd"
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -538,26 +541,32 @@ File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\microtype\mt-euf.cfg"
 File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
-) [2]
-[3] [4] [5] (project1.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 212.
- [6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 212.
+) [3]
+[4] [5] [6] (project1.bbl
+Underfull \hbox (badness 3168) in paragraph at lines 52--56
+[]\T1/ptm/m/n/10 (+20) M. Braver-man and A. Bhowmick, ``Lec-ture notes in in-fo
+r-ma-tion the-ory in com-
+ []
+
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 221.
+ [7]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 221.
  (project1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 212.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 212.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 221.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 221.
 Package rerunfilecheck Info: File `project1.out' has not changed.
 (rerunfilecheck)             Checksum: 021C51A8D0C5F20789D8A3EEFEA57C69;853.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 212.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 221.
  ) 
 Here is how much of TeX's memory you used:
- 9096 strings out of 493335
- 136433 string characters out of 3136681
- 261861 words of memory out of 3000000
- 12335 multiletter control sequences out of 15000+200000
- 39774 words of font info for 139 fonts, out of 3000000 for 9000
+ 9091 strings out of 493335
+ 136593 string characters out of 3136681
+ 264308 words of memory out of 3000000
+ 12327 multiletter control sequences out of 15000+200000
+ 34260 words of font info for 129 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 31i,14n,38p,841b,401s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 31i,14n,38p,1390b,347s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc} <C:\Users
 \jeffr\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ectt1000.pk>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C
@@ -567,16 +576,15 @@ gram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Progra
 m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program F
 iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Program Files
  (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (
-x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86
-)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/M
-iKTeX 2.9/fonts/type1/public/amsfonts/euler/eufm10.pfb><C:/Program Files (x86)/
-MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2
-.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
-pe1/urw/times/utmri8a.pfb>
-Output written on project1.pdf (6 pages, 189363 bytes).
+x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86
+)/MiKTeX 2.9/fonts/type1/public/amsfonts/euler/eufm10.pfb><C:/Program Files (x8
+6)/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files 
+(x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTe
+X 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
+/type1/urw/times/utmri8a.pfb>
+Output written on project1.pdf (7 pages, 189053 bytes).
 PDF statistics:
- 195 PDF objects out of 1000 (max. 8388607)
- 31 named destinations out of 1000 (max. 500000)
- 20577 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 214 PDF objects out of 1000 (max. 8388607)
+ 38 named destinations out of 1000 (max. 500000)
+ 15457 words of extra memory for PDF output out of 17280 (max. 10000000)
 

@@ -42,7 +42,7 @@
 %\title{Bayes-Optimal Intrinsically Motivated Learning v.s. Empowerment Maximisation}
 \title{Deriving Intrinsic Motivation From Uncertainty of Future Goals}
 \author{
- Jeffrey Negrea\thanks{MSc. Statistical Sciences Candidate -- This paper was submitted as a research project for credit under University of Toronto course code CSC 2541}\\
+ Jeffrey Negrea\\
  Department of Statistical Sciences\\
  University of Toronto\\
  Toronto, ON M5S 3G3\\
@@ -58,7 +58,7 @@
 \maketitle
 
 \begin{abstract}
-Intrinsically-motivated reinforcement learning aims to address the question of how actors are motivated in the absence of an external reward system. 
+Intrinsically-motivated reinforcement learning aims to address the question of how actors are or should be motivated in the absence of an external reward system. 
 Among possible behavioural strategies, empowerment-based reasoning is a novel and intuitive strategy for intrinsically motivated reinforcement learning. 
 However, it is unclear from the literature whether empowerment based reasoning is Bayes-optimal.
 The first contributions of this work are to pose a general reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of Empowerment-based strategies relative to the Bayes-optimal strategies. 
@@ -68,7 +68,16 @@ A secondary contribution of this work is to demonstrate that Bayes-optimal strat
 
 \section{Introduction}
 \subsection{Reinforcement Learning and Intrinsically Motivated Learning Background}
-\color{red}\center\textit{PLACE HOLDER}\justify\color{black}
+Reinforcement Learning is the process by which an agent learns about an environment through interaction with the environment in order to discover how to achieve a prescribed goal. Often the agent is conceptualized to interact with the environment across a discrete time horizon. Two common formulations considered are a sequence of \textit{episodes} each executed over a finite time horizon, and a single episode executed over a possibly infinite time horizon. The agent's goal is usually assumed to be to maximize its expected reward or expected discounted reward. The optimal strategy in such a formulation then may be determined by the Bellman optimality equations \cite{sutton1998reinforcement}. Reinforcement learning has been applied to a variety of problems in robotics \cite{mcallister2016data,finn2016deep,christiano2016transfer}, video game A.I. \cite{mnih2015human}, and medical decision making \cite{krishnan2016structured}. A key component of a reinforcement learning problem in all of these scenarios is that the mechanism by which the actor receives rewards is pre prescribed, though it may not be known \textit{a priori} by the actor. \color{red} It is not clear to me if the stochastic effects of actions on the environment is assumed to be known to the user or must be learned like the reward system.\color{black}
+
+Intrinsically motivated reinforcement learning aims to relax the assumption that the reward system is specified in advance (though still not known to the actor). The focus is shifted to how to best prepare for an unknown future goal/reward system. Most techniques for intrinsically motivated learning approach the problem using heuristic metrics, aiming to maximize notions of dependence between the actions taken and the resultant state. These methods may be deemed unsatisfying as it is unclear whether these types of strategies are guaranteed to perform well for goals/rewards which are likely to be specified. Commonly used examples, such as empowerment, take no heed of the process by which future goals/rewards will be constructed. This renders such methods unable to learn about this aspect of the environment and improve their preparation strategies in an episodic framework.    
+
+Specifically, empowerment-based intrinsic motivation, discussed in \citep{mohamed2015variational}, optimizes the mutual information of the action distribution and the resulting outcome. Heuristically, empowerment measures the amount by which an actor can influence the outcome of a game. It is $0$ when the all of the viable actions have identical influence on the resulting state, and is positive otherwise. Empowerment may not sufficiently penalize similarity of available actions. An actor who maximizes empowerment may find himself in a situation where an alternative strategy will yield a higher total probability of achieving a random goal. An empowerment maximizing actor will also be unable to capture the information gathered by an actor regarding the history of random rewards observed and the history of the effects of actions taken. 
+
+In contrast to the ad hoc heuristics which dominate the intrinsic motivation literature, we show that a simple extension to the common formulation gives rise to a natural specification of the intrinsic motivation problem within the framework of Bayesian decision theory. Similar formulations are commonplace in externally motivated reinforcement learning \color{red}cite value function based reinforcement papers. \color{black}. Under the lens of this simple extension, a natural 
+
+
+
 
 \subsection{The Unknown Objective Problem}
 Suppose an actor is able to traverse a \textit{finite} state space, $\Ss$. 
@@ -108,7 +117,7 @@ In order to determine the optimal initial state for either Empowerment or Expect
 
 To determine the complexity of finding the Expected Reward optimal initial state, one notices that $\max_{\omega\in\Omega_s} p(t|s,a)\omega(a|s) = \max_{1\leq j \leq M} p(t|s,a_j)$, since the left problem is a linear program and the basic solutions are the pure strategies. The right problem has run time $O(M)$ for a fixed target state $t$ and initial state $s$. Since this must be computed for every initial state and every target terminal state, the total complexity to find the Expected Reward maximizing initial state is $O(M\cdot N^2)$. 
 
-To determine the complexity of finding the Empowerment optimal initial state, one notes that the mutual information is convex \cite{braverman2011information} in $\omega$ for each candidate initial state. Thus for a particular candidate initial state, computing the Empowerment is equivalent to solving an $M-1$ dimensional convex optimization problem. Suppose that the complexity of this is $\mathfrak{c}(M-1)$. As this must be done for every possible initial state, the total complexity to find the Empowerment maximizing initial state is $O(\mathfrak{c}(M-1)\cdot N)$. 
+To determine the complexity of finding the Empowerment optimal initial state, one notes that the mutual information is concave \cite{braverman2011information} in $\omega$ for each candidate initial state. Thus for a particular candidate initial state, computing the Empowerment is equivalent to solving an $M-1$ dimensional convex optimization problem. Suppose that the complexity of this is $\mathfrak{c}(M-1)$. As this must be done for every possible initial state, the total complexity to find the Empowerment maximizing initial state is $O(\mathfrak{c}(M-1)\cdot N)$. 
 
 One can definitively say that holding the number of pure actions constant, Empowerment maximization is asymptotically less complex than Expected Reward maximization in the number of states. The complexity of solving a convex optimization problem is dependent on the algorithm used. If the algorithm used for convex optimization is superlinear in the dimensionality then, holding the number of states fixed, Expected Reward is asymptotically less complex than Empowerment maximization with respect to the number of pure actions. If the algorithm used for convex optimization is linear (sublinear) in the dimensionality then, holding the number of states fixed, Expected Reward is asymptotically equally as complex (more complex than) Empowerment maximization with respect to the number of pure actions.
 \section{Sub-Optimality of Empowerment}
