@@ -141,6 +141,7 @@ The action(s) taken by the actor will be sampled from a (possibly degenerate) di
 The resultant state, $s_1\in\Ss$, will depend on the action(s) taken, though not deterministically.  
 In [1], the actor is supposed to be allowed a fixed number, $K$, atomic actions in which it may accomplish its goal.
 If the actor succeeds in reaching the target state it receives a unit reward, otherwise there is no reward.
+
 Since the actions are not explicitly conditioned on the intermediate states, then without loss of generality, we consider the possible combinations of $K$ atomic actions in such situations as a single atomic action in a larger space of candidate actions.
 Even if the later actions are dependent on the intermediate states, we may view the combination actions and intermediate states as a single action in a larger space of actions which has a distribution based on the intermediate states:
 \[\PP(\mathbf{a}|s_0) = \sum_{\mathbf{s}\in \Ss^{K-1}} \PP(a_K|\mathbf{s},\mathbf{a}_{K-1}) \prod_{k=1}^{K-1} \PP(a_k|\mathbf{s}_{k-1},\mathbf{a}_{k-1})\PP(s_{k}|\mathbf{s}_{k-1},\mathbf{a}_k)\]
@@ -160,8 +161,10 @@ The expected reward when starting in the state of $s\in\mathcal{S}$ is defined a
 \[\Rr(s) = \sum_{t\in\Ss} \pi(t) \max_{\omega\in\Omega_s} p(t|s,a_t)\omega(a_t|s)\]
 
 
-\section{Computational Complexity of Expected Reward and Empowerment}
-In order to determine the optimal initial state for either empowerment or expected reward, one must compute the empowerment/expected reward of every state. Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the atomic actions. 
+\section{Computational Complexity}
+In this section, we show... [TODO also mention that Shakir develops an efficient variational approximation and uses that instead]
+In order to determine the optimal initial state for either empowerment or expected reward, one must compute the empowerment/expected reward of every state.
+Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the atomic actions. 
 
 \subsection{Expected Reward}
 To determine the complexity of finding the expected reward optimal initial state, one notices that $\max_{\omega\in\Omega_s} p(t|s,a)\omega(a|s) = \max_{1\leq j \leq M} p(t|s,a_j)$, since the left problem is a linear program and the basic solutions are the pure strategies.
@@ -173,9 +176,13 @@ To determine the complexity of finding the empowerment optimal initial state, on
 %One can definitively say that holding the number of pure actions constant, empowerment maximization is asymptotically less complex than expected reward maximization in the number of states. The complexity of solving a convex optimization problem is dependent on the algorithm used. If the algorithm used for convex optimization is superlinear in the dimensionality then, holding the number of states fixed, expected reward is asymptotically less complex than empowerment maximization with respect to the number of pure actions. If the algorithm used for convex optimization is linear (sublinear) in the dimensionality then, holding the number of states fixed, expected reward is asymptotically equally as complex (more complex than) empowerment maximization with respect to the number of pure actions.
 
 \subsection{Comparison}
-Since $\mathfrak{c}$ must be at least linear in its second argument and monotone increasing in its first argument, maximizing expected reward is asymptotically less costly than maximizing empowerment. Even in the smallest possible non-degenerate intrinsic motivation problem, as will be seen below, the derivation of the expected reward maximizing strategy is far less difficult than derivation of the empowerment maximizing strategy. 
+[TODO I would avoid using fancy fonts, often readers don't know what letter they're looking at]
+Since $\mathfrak{c}$ must be at least linear in its second argument and monotone increasing in its first argument, maximizing expected reward is asymptotically less costly than maximizing empowerment. [TODO under what assumptions?]
+Even in the smallest possible non-degenerate intrinsic motivation problem, as will be seen below, the derivation of the expected reward maximizing strategy is far less difficult than derivation of the empowerment maximizing strategy. 
 
-This analysis should be viewed cautiously, however, as the expected reward strategy is not guaranteed to simplify as it did here when the reward type is not restricted to 0-1 rewards for achieving a single randomly selected goal state.  In fact, the computation time of empowerment is naturally independent of the random reward system in effect, while expected reward is not. A further goal of our research will be to investigate the computational cost of expected reward maximization in scenarios with more general reward systems.
+This analysis should be viewed cautiously, however, as the expected reward strategy is not guaranteed to simplify as it did here when the reward type is not restricted to 0-1 rewards for achieving a single randomly selected goal state. [NOTE: If the computational complexity results rely on zero-one rewards, I would make that much more explicit]
+In fact, the computation time of empowerment is naturally independent of the random reward system in effect[what does in effect mean?], while expected reward is not.
+A further goal of our research will be to investigate the computational cost of expected reward maximization in scenarios with more general reward systems.
 
 \section{The Smallest Non-Degenerate Problem and the Sub-Optimality of Empowerment Strategies}
 Here we define the family of smallest non-degenerate intrinsic motivation problems, and demonstrate that in this family, there exists members for which empowerment maximization yields irrational decisions.
@@ -197,7 +204,7 @@ First one will derive the expected reward optimal strategy. To this end, one fir
 \end{align*}
 Hence, in this scenario, the expected reward maximizing strategy is to start in the state which has the highest discrepancy between the corresponding possible transition distributions. This is the state that maximizes $\vert p_i-q_i\vert$. This is intuitive as it aims to best associate one action with  each possible goal. 
 
-\subsection{Empowerment Optimal Solution}
+\subsection{Empowerment-optimal solution}
 One now derives the empowerment optimal strategy; 
 \begin{align*}
 \Ee(i) 
@@ -227,7 +234,7 @@ Thus setting $g'(u^\star)=0$, assuming $p\neq q$ would imply
 \end{align*}
 Since $H$ is a concave function, $g$ is non-negative on [0,1]. Also, $g(0)=g(1)=0$. Hence $g$ is maximized at $u^\star$. If $p=q$ then the empowerment is uniformly $0$.
 
-\subsection{Sub-Optimality Example}
+\subsection{Sub-optimality example}
 For empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes two counter examples to this. The first example was found by guess-and-check, and the second example was found by searching for the locally maximal performance gap when initialized from the first example. 
 
 \subsubsection{Example 1}
