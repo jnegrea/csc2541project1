@@ -58,12 +58,15 @@
 \maketitle
 
 \begin{abstract}
-Intrinsically-motivated reinforcement learning aims to address the question of how actors are or should be motivated in the absence of an external reward system. 
-Among possible behavioural strategies, empowerment-based reasoning is a novel and intuitive strategy for intrinsically motivated reinforcement learning. 
-However, it is unclear from the literature whether empowerment-based reasoning is Bayes-optimal.
-The first contributions of this work are to pose a general intrinsically motivated reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of empowerment-based strategies relative to Bayes-optimal strategies. 
-Empowerment will be shown to be suboptimal when the Bayesian loss function is the (negative) expected reward. 
-A secondary contribution of this work is to demonstrate that Bayes-optimal strategies  for problems with non-unit rewards may be determined by examining related problems with unit rewards.  The final contribution of this work will present a simple method for an actor to learn the distributions of objectives and rewards through multiple trials and update his Bayes-optimal strategy accordingly. 
+Intrinsically-motivated reinforcement learning asks how agents should act in the absence of an explicit reward system. 
+We suggest a simple unifying approach to deriving intrinsic motivation, as arising from uncertainty about which goal an agent will be asked to achieve in the future.
+We formalize this approach using Bayesian decision theory, and show that it fulfills previous suggestions reasonable properties of intrinsic motivation. 
+We also compare and contrast it to the recently-proposed intrinsic motivation system of empowerment, and give a simple example where empowerment fails to choose the optimal action.
+%Among possible  strategies, empowerment-based reasoning is a novel and intuitive strategy for intrinsically motivated reinforcement learning. 
+%However, it is unclear from the literature whether empowerment-based reasoning is Bayes-optimal.
+%The first contributions of this work are to pose a general intrinsically motivated reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of empowerment-based strategies relative to Bayes-optimal strategies. 
+%Empowerment will be shown to be suboptimal when the Bayesian loss function is the (negative) expected reward. 
+%A secondary contribution of this work is to demonstrate that Bayes-optimal strategies  for problems with non-unit rewards may be determined by examining related problems with unit rewards.  The final contribution of this work will present a simple method for an actor to learn the distributions of objectives and rewards through multiple trials and update his Bayes-optimal strategy accordingly. 
 \end{abstract}
 
 \section{Introduction}
