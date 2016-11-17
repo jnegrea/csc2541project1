@@ -6,3 +6,6 @@
 *.synctex.gz
 *.log
 *.blg
+*.nav
+*.snm
+*.toc

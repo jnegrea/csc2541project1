@@ -1,0 +1,190 @@
+\documentclass[aspectratio=169]{beamer}
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2016
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2016}
+
+%\usepackage{nips_2016}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%\usepackage[final,nonatbib]{nips_2016}
+
+%\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+%\usepackage[shortlabels]{enumitem}
+\usepackage{color}
+\usepackage{ragged2e}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage[utf8]{inputenc}
+%\usepackage[round]{natbib}
+\bibliographystyle{apalike}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{proposition}{Proposition}
+%\newtheorem{corollary}{Corollary}
+
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Ss}{\mathcal{S}}
+\newcommand{\Ii}{\mathcal{I}}
+\newcommand{\Ee}{\mathcal{E}}
+\newcommand{\Rr}{\mathcal{R}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%\title{Bayes-Optimal Intrinsically Motivated Learning v.s. Empowerment Maximisation}
+\title{Deriving Intrinsic Motivation from \\ Uncertainty about Future Goals}
+\subtitle{https://github.com/jnegrea/csc2541project1}
+\author{
+ Jeffrey Negrea
+}
+\institute{
+ Department of Statistical Sciences\\
+ University of Toronto\\
+ \texttt{negrea@utstat.toronto.edu}}
+ 
+\usetheme{default}
+\usecolortheme{seahorse} 
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+	\frametitle{Table of Contents}
+	\tableofcontents
+\end{frame}
+
+\section{What Is Intrinsically Motivated Reinforcement Learning?}
+\begin{frame}
+	\frametitle{Heuristics of Reinforcement Learning}
+	\begin{itemize}
+		\item Recall that \textit{reinforcement learning} addresses the problem of how machines can learn to perform a task by trial and error.\pause\vspace{0.5em}
+		\begin{itemize}
+			\item A reward mechanism is pre-prescribed for the learner 
+			\item The learner does not know the topology of the state space
+			\item The learner does not know the reward of each state	
+			\item The learner does not know the transition mechanics\pause\vspace{0.5em}
+		\end{itemize}
+		\item The machine learns the topology of the state space, the transition mechanics, the topography of the reward function, and how to use the mechanics to optimise the specified reward.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Questions Leading to Intrinsic Motivation}
+	\begin{itemize}
+		\item What if the reward function has yet to be specified?\pause\vspace{1em}
+		\item For animal learners, reward signals are recieved by engaging in exploratory, `fun' behaviours. Can machines be incited to play and explore? To have fun?\pause\vspace{1em}
+		\item Exploratory behaviour is important for animal development -- human children learn about the world by playing. Can a machine which learns by playing outperform one that does not when performance is integrated over a wide variety of tasks?
+	\end{itemize}
+\end{frame}
+
+\section{Qualitative Aspects of Intrinsic Motivation}
+\begin{frame}
+	\frametitle{Qualitative Aspects of Intrinsic Motivation I}
+	\begin{itemize}
+		\item In order to teach a machine to `play' we need measures which quantify what it means to `play' effectively. \vspace{.5em}
+		\item In order to develop such measures we need heuristics which defines what it means to `play effectively.' \vspace{0.5em} \pause
+		\item \citet{schmidhuber2010formal} posits that an intrinsically motivated learner should have:
+		\begin{itemize}
+			\item An adaptive world model
+			\item A learning algorithm to update the model
+			\item An intrinsic reward system measuring model improvement
+			\item A behavioural policy optimising intrinsic reward\pause
+		\end{itemize}\vspace{0.5em}
+		\item The kernel of this thesis is that intrinsic motivation is derived from the pursuit of a better model of the dynamics of the world. 
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Qualitative Aspects of Intrinsic Motivation II}
+	\begin{itemize}
+		\item \citet{salge2014empowerment} posit that an intrinsically motivated learner should seek states of high (heuristic) \textit{empowerment}.
+		\item Empowerment is an intrinsic utility measure which is \textit{Local, Universal, and Task-Independent}:\pause\vspace{.5em}
+		\begin{itemize}
+			\item \textit{Local}: An agent can determine intrinsic utility of a state from the local environment\pause\vspace{.5em}
+			\item \textit{Universal}: The utility scale should be independent of the structure of the actor and environment -- utility should be comparable across distinct problem classes\pause\vspace{.5em}
+			\item \textit{Task-Independent}: The utility is independent of any particular goal or reward function
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\section{Quantitative Measures for Intrinsic Motivation}
+\begin{frame}
+	\frametitle{Quantitative Measures for Intrinsic Motivation I: Optimal Reward}
+	\begin{itemize}
+		\item \citet{singh2010intrinsically} introduces the concept of \textit{optimal reward functions}.
+		\item Requires a fixed fitness function to be pre assigned, as in traditional RL\pause
+		\item The learning problem is posed as a two-stage optimisation problem;\pause
+		\begin{itemize}
+			\item Find the reward function such that an RL agent maximising the reward has highest expected fitness\pause
+			\item Find the RL strategy which maximises the optimal reward function
+		\end{itemize}\pause		 
+		\item By construction, performs no worse on average than RL using the the natural reward corresponding to fitness. 
+		\item Avoids greedy behaviour in favour of exploratory behaviour (when beneficial).
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Quantitative Measures for Intrinsic Motivation II: Empowerment}
+	\begin{itemize}
+		\item \textit{Empowerment} (metric) aims to achieve the heuristic it is named for
+		\item Quantified as the channel capacity of a state: 
+	\end{itemize}
+	\[\Ee(s)=\max_{\omega\in\Omega_s}\Ii(A,S_1|s)=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1|s,A)}{p(S_1|s)}\right] \]
+	{\small Where the expectation is taken with respect to the joint distribution of the action and the resultant state, $(A,S_1)$, conditional on the starting state, $s$, for a fixed choice of $\omega$ --- the distribution of the action given the starting state.} \pause
+	\begin{itemize}
+		\item Discussed thoroughly in \citet{singh2010intrinsically}, applied in \citet{mohamed2015variational}
+		\item Aims to find the state in which an actor is most able to travel to any arbitrary state\pause\vspace{0.5em}
+		\item Not obvious if the information theoretic definition is suitable
+		\item Does not consider the how rewards may be assigned in the future
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Quantitative Measures for Intrinsic Motivation III: Expected Reward}
+	\begin{itemize}
+		\item Purpose of my project: Define a Bayesian framework for intrinsically motivation.
+		\item Assume the agent has an internal prior on the class of possible reward functions\pause
+		\item Determine the policy which maximises the \textit{intrinsic expected reward} (iER)
+		\begin{itemize}
+			\item Expectation is taken with respect to the random reward function, possibly random choice of action, and the results of actions (where the latter two may form a feedback loop)\pause
+			\item \textit{Intrinsic} since the prior on potential rewards is internal to the agent\pause\vspace{0.5em}
+			\item Agent learns about the environment and transition mechanics as in traditional RL \textit{and} 
+			\item Agent learns about distribution of rewards and how to improve heuristic empowerment by computing the posterior distribution of rewards and updating the iER.\pause			
+		\end{itemize}		 
+		\item Originally motivated by goal to show that the empowerment metric was Bayes-optimal the class of problems in \citet{mohamed2015variational}
+		\begin{itemize}
+			\item It turns out this is false
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{References}
+\nocite{*}
+\bibliography{project1}
+\end{frame}
+\end{document}
