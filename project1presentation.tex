@@ -174,12 +174,22 @@
 			\item \textit{Intrinsic} since the prior on potential rewards is internal to the agent\pause\vspace{0.5em}
 			\item Agent learns about the environment and transition mechanics as in traditional RL \textit{and} 
 			\item Agent learns about distribution of rewards and how to improve heuristic empowerment by computing the posterior distribution of rewards and updating the iER.\pause			
-		\end{itemize}		 
-		\item Originally motivated by goal to show that the empowerment metric was Bayes-optimal the class of problems in \citet{mohamed2015variational}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Quantitative Measures for Intrinsic Motivation III: Expected Reward}
+	\begin{itemize}	 
+		\item Bayes Loss is the (negative) Expected Reward (conditional on the reward function)
+		\item Bayes Risk is the (negative) Intrinsic Expected Reward (expected Bayes loss) \vspace{1em}\pause
+		\item Originally motivated by goal to show that the empowerment metric was Bayes-optimal for the class of problems in \citet{mohamed2015variational}
 		\begin{itemize}
 			\item It turns out this is false
 		\end{itemize}
+		\item Have shown that for the class of problems in \citet{mohamed2015variational} that iER asymptotically no more computationally complex than the empowerment metric.
 	\end{itemize}
+	
 \end{frame}
 
 \begin{frame}[allowframebreaks]
