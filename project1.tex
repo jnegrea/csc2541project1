@@ -23,8 +23,6 @@
 \usepackage{color}
 \usepackage{ragged2e}
 \usepackage[square,sort,comma,numbers]{natbib}
-
-
 \usepackage{amsmath,amsthm,amssymb,amsfonts}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -40,28 +38,50 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 %\title{Bayes-Optimal Intrinsically Motivated Learning v.s. Empowerment Maximisation}
-\title{Deriving Intrinsic Motivation from \\ Uncertainty about Future Goals}
+%\title{Deriving Intrinsic Motivation from \\ Uncertainty about Future Goals}
+\title{A Bayesian Approach to Intrinsically\\Motivated Reinforcement Learning}
+
 \author{
  Jeffrey Negrea\\
  Department of Statistical Sciences\\
  University of Toronto\\
- Toronto, ON M5S 3G3\\
  \texttt{negrea@utstat.toronto.edu}
  \And
  David Duvenaud\\
  Department of Computer Science\\
  University of Toronto\\
- Toronto, ON M5S 3H5\\
  \texttt{duvenaud@cs.toronto.edu}
 }
+
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,trees}
+
+\tikzstyle{title} = [rectangle, rounded corners, minimum width=2cm, minimum height=1cm, text centered, draw=black]
+
+\tikzstyle{start} = [rectangle, rounded corners, minimum width=2cm, minimum height=1cm, text width=2cm, text centered, draw=black, fill=red!30]
+
+\tikzstyle{stop} = [rectangle, rounded corners, minimum width=2cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+
+
+\tikzstyle{io} = [trapezium, trapezium left angle=80, trapezium right angle=100, minimum width=2cm, minimum height=1cm, text centered, draw=black, text width=2cm, fill=blue!30]
+
+\tikzstyle{process} = [rectangle, minimum width=2cm, minimum height=1cm, text centered, text width=2cm, draw=black, fill=orange!30]
+
+\tikzstyle{prior} = [rectangle, minimum width=2cm, minimum height=1cm, text centered, text width=2cm, draw=black, fill=purple!30]
+
+\tikzstyle{decision} = [diamond, minimum width=1cm, minimum height=1cm, text centered, draw=black, fill=purple!30]
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Intrinsically-motivated reinforcement learning asks how agents should act in the absence of an explicit reward system. 
-We suggest a simple unifying approach to deriving intrinsic motivation, as arising from uncertainty about which goal an agent will be asked to achieve in the future.
-We formalize this approach using Bayesian decision theory, and show that it fulfills previous suggestions about reasonable properties of intrinsic motivation. 
-We also compare and contrast it to the recently-proposed empowerment heuristic, and give a simple example where empowerment fails to choose the optimal action.
+Intrinsically motivated reinforcement learning asks how agents act when motivated by an internal reward system, and how such a reward system should be structured. 
+We suggest a simple unifying approach to deriving intrinsic motivation, as arising from uncertainty about the future goals of an agent.
+We formalize this approach using Bayesian decision theory, and show that it meets existing heuristic criteria for the characteristics intrinsic motivation should have. 
+We also compare and contrast it to the recently-proposed empowerment metric, and give a simple example where empowerment fails to choose the optimal policy.
 %Among possible  strategies, empowerment-based reasoning is a novel and intuitive strategy for intrinsically motivated reinforcement learning. 
 %However, it is unclear from the literature whether empowerment-based reasoning is Bayes-optimal.
 %The first contributions of this work are to pose a general intrinsically motivated reinforcement learning problem in the framework of Bayesian decision theory and to assess the performance of empowerment-based strategies relative to Bayes-optimal strategies. 
@@ -69,41 +89,116 @@ We also compare and contrast it to the recently-proposed empowerment heuristic, 
 %A secondary contribution of this work is to demonstrate that Bayes-optimal strategies  for problems with non-unit rewards may be determined by examining related problems with unit rewards.  The final contribution of this work will present a simple method for an actor to learn the distributions of objectives and rewards through multiple trials and update his Bayes-optimal strategy accordingly. 
 \end{abstract}
 
-\section{Introduction}
+\section{Introduction and Related Work}
 %Reinforcement Learning is the process by which an agent learns about an environment through interaction with the environment in order to discover how to achieve a prescribed goal.
 %Often the agent is conceptualized to interact with the environment across a discrete time horizon.
 %Two common formulations considered are a sequence of \textit{episodes} each executed over a finite time horizon, and a single episode executed over a possibly infinite time horizon. 
 %The agent's goal is usually assumed to be to maximize its expected reward or expected discounted reward.
 %The optimal strategy in such a formulation then may be determined by the Bellman optimality equations \cite{sutton1998reinforcement}.
 %Reinforcement learning has been successfully applied to a variety of problems in robotics \cite{mcallister2016data,finn2016deep,christiano2016transfer}, video game A.I. \cite{mnih2015human}, and medical decision making \cite{krishnan2016structured}.
-A key component of most reinforcement learning frameworks is that the mechanism by which the actor receives rewards is fixed and pre-prescribed.
+A key component of traditional reinforcement learning frameworks is that the mechanism by which the actor receives rewards is fixed and is pre-prescribed as part of the environment.
 % though it may not be known \textit{a priori} by the actor.
-Intrinsically motivated reinforcement learning~\cite{oudeyer2008can}. 
- aims to relax the assumption that the reward system is always known.
+Intrinsically motivated reinforcement learning aims to generalize the notion of reward functions for reinforcement learning problems by shifting the reward system from being part of the environment to being partially or completely part of the actor, and/or by not requiring the reward system to be fixed or pre-prescribed. This is often interpreted as allowing the actor to be motivated not only by achieving standardized goals, but also for having improved its model of the environment, and is often compared to the way in which humans and animals learn through playing and experimentation \citep{oudeyer2008can,schmidhuber2010formal}. 
 %is specified in advance (though still not known to the actor). 
-For instance, Singh \textit{et al.} \cite{singh2010intrinsically} propose that the reward system should be internal to the actor as opposed to prescribed by the environment and describe the open ended behaviour of an actor interacting with an environment.
-Mohammed and Rezende \cite{mohamed2015variational}, focus on how to best prepare for an unknown future goal/reward system.
 
-The recently-introduced measure of \emph{empowerment}~\citep{mohamed2015variational, salge2014empowerment} approach the problem using information-theoretic metrics, aiming to maximize notions of dependence between the actions taken and the resultant state.
-%However, these methods may be deemed unsatisfying as it is unclear whether these types of strategies are guaranteed to perform well for goals/rewards which are likely to be specified.
-%Commonly-used examples, such as empowerment , take no heed of the process by which future goals/rewards will be constructed.
-%This renders such methods unable to learn about this aspect of the environment and improve their preparation strategies in an episodic framework.
-Specifically, empowerment-based intrinsic motivation, as discussed in \citep{mohamed2015variational}, optimizes the mutual information of the action distribution and the resulting outcome.
-Heuristically, empowerment measures the amount by which an actor can influence the outcome of a game.
-It is $0$ when the all of the viable actions have identical influence on the resulting state, and is positive otherwise.
+However, there is a divergence in the literature as to what it means to be intrinsically motivated; while it is generally established that the core component of intrinsic motivation is that the reward system used to establish the optimal policy is internal to the actor, there exist multiple distinct interpretations of how rewards systems are related to the environment. The first interpretation asserts that there is a fixed underlying external fitness function (e.g. reproductive success) on the space of actor trajectories. This is described in Singh \textit{et al.} \cite{singh2010intrinsically}, where the authors propose that the reward system used to drive the agent's behaviour should be internal to the agent and the focus of their approach is the search for the internal reward function which yields the highest expected fitness. This may be interpreted as a way of smoothing the external reward system (fitness) in a way which generalizes the Q-learning discounted future reward framework in order to avoid overly greedy, short-sighted strategies. 
+ 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1cm]
+\node (extR) [start] {External Reward};
+\node (optE) [io, right of=extR,xshift=1.8cm] {Optimise Over Candidate Reward Functions};
+\node (intR) [process, right of=optE,xshift=1.8cm] {Internal Reward};
+\node (optT) [io, right of=intR,xshift=1.8cm] {Optimise over Policies};
+\node (pol)  [stop, right of=optT,xshift=1.8cm] {Policy};
 
-\subsection{Limitations of the empowerment heuristic}
-However, empowerment may not sufficiently penalize similarity of available actions.
-For example, an actor who maximizes empowerment may find himself in a situation where an alternative strategy will yield a higher total probability of achieving a random goal.
-An empowerment-maximizing actor will also be unable to capture the information gathered by an actor regarding the history of random rewards observed and the history of the effects of actions taken.
-One may argue in favour of empowerment that the measure is reward-system-independent.
-However, by virtue of the fact that a goal/reward will be randomly prescribed there must be a distribution from which it is selected.  
+\draw [arrow] (extR) -> (optE);
+\draw [arrow] (optE) -> (intR);
+\draw [arrow] (intR) -> (optT);
+\draw [arrow] (optT) -> (pol);
+\end{tikzpicture}
+\caption{Intrinsic Motivation as per Singh et al.} \label{fig:M1}
+\end{figure}
 
-\subsection{Extending reinforcement learning to include uncertainly about future goals}
-In contrast to these \emph{ad-hoc} heuristics, we show that a simple extension to the standard expected-reward-maximisation framework naturally addresses the same problems as intrinsic motivation.
-The extension is simple: we make explicit consideration of the distribution from which goals/rewards are sampled.
-Initially, we consider this distribution to be fixed and known.
-However, in later sections we discuss how this distribution can be learned in an episodic framework.
+The second interpretation, as per Schmidhuber \cite{schmidhuber2010formal}, posits that reward systems are split (possibly non-linearly) into internal and external components, and that the internal component of motivation is derived from quality of the learned environmental model. The heuristic qualities of the internal reward component in this framework are listed in section 2. Model quality in this framework is, in some instances, identified with the model's efficiency as a compressor of the data history. Incremental internal reward from time $t$ to time $t+1$ is measured based on (a possibly non-linear) notion of the improvement in model quality between the model fit on the first $t$ observations and the model fit on all $t+1$ observations, when performance is assessed with respect to all $t+1$ observations.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1cm]
+\node (extR) [start] {External Reward};
+\node (oldM) [start, below of=extR,yshift=-.5cm] {Old Model Performance on Current Data};
+\node (newM) [start, below of=oldM,yshift=-.8cm] {New Model Performance on Current Data};
+\node (f) [decision, right of=oldM,xshift=1cm] {$f$};
+\node (intR) [process, right of=f,xshift=.8cm] {Internal Reward};
+\node (g) [decision,above of=intR,yshift=.5cm] {$g$};
+\node (totR) [process, right of=g,xshift=.8cm]{Total Reward};
+\node (optT) [io, right of=totR,xshift=1.8cm] {Optimise over Policies};
+\node (pol)  [stop, right of=optT,xshift=1.8cm] {Policy};
+
+\draw [arrow] (extR) -> (g);
+\draw [arrow] (oldM) -> (f);
+\draw [arrow] (newM) -| (f);
+\draw [arrow] (f) -> (intR);
+\draw [arrow] (intR) -> (g);
+\draw [arrow] (g) -> (totR);
+\draw [arrow] (totR) -> (optT);
+\draw [arrow] (optT) -> (pol);
+\end{tikzpicture}
+\caption{Intrinsic Motivation as per Schmidhuber} \label{fig:M2}
+\end{figure}
+
+The third interpretation, \cite{mohamed2015variational,salge2014empowerment}, establishes that reward systems exist external to the actor, however they are unknown and stochastic. Internal motivation is then formulated as a utility system that is optimised in order to prepare for an unknown future goal/reward system. It is this notion of intrinsic motivation that we will focus on for this project. 
+
+The recently-introduced measure of \emph{empowerment}~\citep{mohamed2015variational, salge2014empowerment} approaches the problem using information-theoretic metrics, aiming to maximize notions of dependence between the actions taken and the resultant state. Specifically, empowerment-based intrinsic motivation, as discussed in \citep{mohamed2015variational}, optimizes the mutual information of the action distribution and the resulting outcome.
+Heuristically, as described in \cite{salge2014empowerment}, empowerment measures the amount by which an actor can influence the outcome of a game.
+It is $0$ when the all of the viable actions have identical influence on the resulting state, and is positive otherwise. However, as shown in figure 3, there is no connection between the empowerment-based internal reward system or its resulting policy and the external reward system. This is unsatisfactory as agents will not be driven to achieve real goals through any amount of learning. The expected reward framework we introduce in section 3 addresses the same class of problems as empowerment, but has an architecture which accounts for the external reward system, as shown in figure 4. 
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1cm]
+\node (extR) [start] {External Reward (Unknown \& Random)};
+\node (intR) [process, right of=optE,xshift=1.8cm] {Internal Reward};
+\node (optT) [io, right of=intR,xshift=1.8cm] {Optimise over Policies};
+\node (pol)  [stop, right of=optT,xshift=1.8cm] {Policy};
+
+\draw [arrow] (intR) -> (optT);
+\draw [arrow] (optT) -> (pol);
+\end{tikzpicture}
+\caption{Intrinsic Motivation as per Empowerment Maximization} \label{fig:M3}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1cm]
+\node (pi)   [prior] {Prior/Posterior on External Reward};
+\node (intR) [process, right of=pi,xshift=1.5cm] {Internal Reward};
+\node (optT) [io, right of=intR,xshift=1.8cm] {Optimise over Policies};
+\node (pol)  [stop, right of=optT,xshift=1.8cm] {Policy};
+\node (act)  [start, right of=pol,xshift=1.5cm] {Realized Reward};
+\node (extR) [start,above of=act,yshift=0.6cm] {External Reward (Unknown \& Random)};
+\node (bay)  [io, below of=optT,yshift=-.5cm] {Bayes Rule};
+
+
+\draw [arrow] (pi)->(intR);
+\draw [arrow] (intR) -> (optT);
+\draw [arrow] (optT) -> (pol);
+\draw [arrow] (extR) -> (act);
+\draw [arrow] (pol) -> (act);
+\draw [arrow] (act)|-(bay);
+\draw [arrow] (bay)-|(pi);
+\end{tikzpicture}
+\caption{Intrinsic Motivation as per Bayesian Extected Reward} \label{fig:M4}
+\end{figure}
+
+This paper proceeds in the following manner. In section 2 we step back to discuss desiderata for the intrinsic motivation system. In section 3 we formalize the problem we intend to address, formally introduce the notion of empowerment and propose an alternative approach to the unknown/stochastic reward interpretation of intrinsic motivation which puts the analytic formulation of the objective on a more similar basis to the other two interpretations of intrinsic motivation -- using expected reward as a starting point. In section 4 we demonstrate that the expected reward framework is no more computationally complex than empowerment. In section 5 we demonstrate that our formulation is non-trivially distinct from empowerment as the optimal strategies may differ for even the smallest non-degenerate problems. In section 6 we briefly describe the posterior update process, by which the model for the reward distribution is improved.  
+
+
+
+%\subsection{Extending reinforcement learning to include uncertainly about future goals}
+%In contrast to these \emph{ad-hoc} heuristics, we show that a simple extension to the standard expected-reward-maximisation framework naturally addresses the same problems as intrinsic motivation.
+%The extension is simple: we make explicit consideration of the distribution from which goals/rewards are sampled.
+%Initially, we consider this distribution to be fixed and known.
+%However, in later sections we discuss how this distribution can be learned in an episodic framework.
 %Similar formulations are commonplace in extrinsically motivated reinforcement learning \cite{sutton1998reinforcement}. 
 
 %We consider the natural strategy in such a framework to be expected reward maximisation.
@@ -130,9 +225,7 @@ Salge \textit{et al.} \cite{salge2014empowerment} have characterized empowerment
 \item \textit{Task-Independent} means that the level of motivation is independent of any particular goal or reward function.
 \end{enumerate}
 
-[TODO: Express what \cite{singh2010intrinsically} suggests and learner should do (hopefully in a list)]
-
-We demonstrate that a Bayseian approach to intrinsic motivation can share the characterizing properties of empowerment while maintaining the traits outlined by Schmidhuber.  
+We demonstrate that a Bayseian approach to unknown/stochastic reward framework for intrinsic motivation, derived via expected reward, can share the characterizing properties of empowerment while maintaining the traits outlined by Schmidhuber.  
 
 
 %As the actor is uncertain of what his goal will be, any reasonable strategy for selecting the starting state, $s_0$, will need to balance the following meta-objectives:
@@ -148,7 +241,7 @@ We demonstrate that a Bayseian approach to intrinsic motivation can share the ch
 
 \section{Formalizing Bayesian Intrinsic Motivation}
 
-[TODO: Formally write down the old expected-reward framework, then the new one]
+%[TODO: Formally write down the old expected-reward framework, then the new one]
 
 %\section{A Simple Yet General Unknown Objective Problem}
 Suppose an actor is able to traverse a \textit{finite} state space, $\Ss$. 
@@ -173,21 +266,43 @@ A second generalization of the problem would involve non-uniform, possibly rando
 The empowerment of $s\in\mathcal{S}$ is defined as the maximum over viable action distributions of the mutual information of action random variable and the terminal state random variable, $S_1$.
 \[\Ee(s)=\max_{\omega\in\Omega_s}\Ii(A,S_1|S)=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1|s,A)}{p(S_1|s)}\right] \]
 Where the expectation is taken with respect to the joint distribution of the action and the resultant state, $(A,S_1)$, conditional on the starting state, $s$, for a fixed choice of $\omega$ --- the distribution of the action given the starting state. 
+\subsubsection{Limitations of the empowerment metric}
+As will be derived analytically in section 5, empowerment may not sufficiently penalize similarity of available actions.
+For example, an actor who maximizes empowerment may find himself in a situation where an alternative strategy will yield a higher total probability of achieving a random goal.
+An empowerment-maximizing actor will also be unable to capture the information gathered regarding the history of random rewards observed and the history of the effects of actions taken.
+One may argue in favour of empowerment that the measure is reward-system-independent.
+However, by virtue of the fact that a goal/reward will be randomly prescribed there must be a distribution from which it is selected. This motivates the Expected Reward framework described below.
+
 \subsection{Expected Reward}
 The expected reward when starting in the state of $s\in\mathcal{S}$ is defined assuming that once the goal state is revealed the actor will perform the action which is most likely to allow it to achieve its goal:
-\[\Rr(s) = \sum_{t\in\Ss} \pi(t) \max_{\omega\in\Omega_s} p(t|s,a_t)\omega(a_t|s)\]
+\[\Rr_\pi(s) = \sum_{t\in\Ss} \pi(t) \max_{\omega\in\Omega_s} p(t|s,a_t)\omega(a_t|s)\]
 
+This definition naturally satisfies the three characterizing properties of empowerment. It is local since calculating expected reward for a state only involves examination of the parts of the state space accessible from that space. It is universal because the scale on which it is measured is probability which is globally comparable. It is task independent because we have `integrated' over all possible tasks.
 
+Expected Reward may be interpreted in the framework of Bayesian decision theory as the complement of the Bayes risk for the policy `starting in state $s$ when the prior is $\pi$'. This is formalized below: 
+\subsubsection{Bayesian Formulation of Expected Reward}
+\begin{itemize}
+\item The possible states of the world is taken as the goal states.
+\item The action space is taken as the combinations of atomic action in the multiple atomic action framework, or the single stochastic actions in the summarized action framework described above.
+\item The observations are taken to be the initial and intermediate states in the multiple atomic action formulation, or only the initial state in the summarized action framework.
+\item The possible decision rule have two components -- the second stage selects actions given the initial state, and the first stage selects the initial state. 
+\item The Bayes Loss Function is the complement of the reward function -- it is 1 if the goal state is not achieved and 0 if the goal state is achieved.
+\item The Bayes Risk Function is the expected Loss Function, where expectation is taken over the the possible observations and actions. 
+\item The Bayes Risk is the expectation over possible goal states of the Risk Function. 
+\end{itemize}
+Determining the Bayes optimal strategy in the above formulation involves optimizing both stages of the decision rule. Given a goal, $t$, and an initial state, $s$, the optimal decision rule obviously selects the action policy which gives the highest chance of reaching the goal: 
+\[\text{argmax}_{\omega\in\Omega_s} p(t|s,a_t)\omega(a_t|s)\]
+Hence the Bayes Risk of a decision rule, when considering only decision rules where the second stage is optimal, depends only on the prior distribution on goals and the choice of initial state. and is equal to $(1-\mathcal{R}_\pi(s))$. Hence the policy of selection the starting state maximizing $\mathcal{R}_\pi(s))$ is equivalent to selecting the Bayes optimal strategy for the above formulation.
 \section{Computational Complexity}
-In this section, we show that in the single target state intrinsic motivation problem formulated above, expected reward maximization is less computationally complex than exact empowerment maximization. 
-The variational approach from \cite{mohamed2015variational}, simplifies the computation of empowerment based strategies using mini-batches and Monte Carlo approximation, hence this is \textit{not} in direct comparison with the cost of the algorithm used in that paper. 
+In this section, we show that in the single target state intrinsic motivation problem formulated above, when the transition dynamics are fully known, expected reward maximization is less computationally complex than exact empowerment maximization. 
+The variational approach from \cite{mohamed2015variational}, simplifies the approximate computation of empowerment based strategies using mini-batches and Monte Carlo approximation when the transition dynamics are not known, hence this is \textit{not} in direct comparison with the cost of the algorithm used in that paper. 
 
 We also make explicit that the expected reward strategy is not always guaranteed to simplify as it does here when the reward type is not restricted to 0-1 rewards for achieving a single randomly selected goal state. In fact, the computation time of empowerment is naturally independent of the random reward system% in effect [what does in effect mean?]
 , while expected reward is not.
 A further goal of our research will be to investigate the computational cost of expected reward maximization in scenarios with more general reward systems.
  
 In order to determine the optimal initial state for either empowerment or expected reward, one must compute the empowerment/expected reward of every state.
-Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the atomic actions. 
+Assume that $|\Ss|=N$ and that the actor has $M$ atomic actions, $\{a_j\}_{j=1}^M$ available and that the class of action distributions from which the actor can sample its action is the simplex defined by the probabilistic mixtures of atomic actions. 
 
 \subsection{Expected Reward}
 To determine the complexity of finding the expected reward optimal initial state, one notices that $\max_{\omega\in\Omega_s} p(t|s,a)\omega(a|s) = \max_{1\leq j \leq M} p(t|s,a_j)$, since the left problem is a linear program and the basic solutions are the pure strategies.
@@ -196,15 +311,16 @@ The right-hand-side optimization problem has run time $O(M)$ for a fixed target 
 \subsection{Empowerment}
 To determine the complexity of finding the empowerment optimal initial state, one notes that the mutual information is concave \cite{braverman2011information} in $\omega$ for each candidate initial state. Computing the mutual information for a candidate action distribution and a fixed initial state involves summation of $MN$ logarithmic terms, each with $M$ terms to be summed in the denominator. There are only $N$ distinct denominators which are each repeated $M$ times. Hence the time to compute the mutual information is $O((M+1)N)=O(MN)$ for a particular candidate initial state and candidate action. Computing the empowerment is then equivalent to solving an $M-1$ dimensional convex optimization problem where the objective function has $O(MN)$ time to compute.  Suppose that the complexity of solving a convex optimization problem with dimension $D$ and time to compute the objective function $E$ is $O(\text{conOpt}(D,E))$. As this must be done for every possible initial state, the total complexity to find the empowerment maximizing initial state is $O(\text{conOpt}(M,MN)\cdot N)$. 
 
-%One can definitively say that holding the number of pure actions constant, empowerment maximization is asymptotically less complex than expected reward maximization in the number of states. The complexity of solving a convex optimization problem is dependent on the algorithm used. If the algorithm used for convex optimization is superlinear in the dimensionality then, holding the number of states fixed, expected reward is asymptotically less complex than empowerment maximization with respect to the number of pure actions. If the algorithm used for convex optimization is linear (sublinear) in the dimensionality then, holding the number of states fixed, expected reward is asymptotically equally as complex (more complex than) empowerment maximization with respect to the number of pure actions.
-
 \subsection{Comparison}
 %[TODO I would avoid using fancy fonts, often readers don't know what letter they're looking at]
-Since $\text{conOpt}$ must be at least linear in its second argument and monotone increasing in its first argument, maximizing expected reward is asymptotically less costly than maximizing empowerment. [TODO under what assumptions?]
+Since $\text{conOpt}$ must be at least linear in its second argument and monotone increasing in its first argument, maximizing expected reward is asymptotically less costly than maximizing empowerment for the problem class formulated in section 3.
 Even in the smallest possible non-degenerate intrinsic motivation problem, as will be seen below, the derivation of the expected reward maximizing strategy is far less difficult than derivation of the empowerment maximizing strategy. 
 
+\subsection{Variational Empowerment}
+In \cite{mohamed2015variational} the authors introduce a variational approximation to empowerment. The variational approximation of empowerment is also formulated as an optimization of an expectation over the same distribution as the original empowerment. Hence the analysis of computational complexity of exact evaluation of the variational approximation to empowerment yields the same lower bound on the complexity as the original notion of empowerment. The main advantage of the variational approximation to empowerment, therefore, does not lie in its simplified exact calculation; it lies in the ability to approximate the expectation with Monte-Carlo samples obtained by interaction with the environment, as described in section 4.1 of their paper. This is advantageous when the exact transition dynamics are not known. 
+
 \section{The Smallest Non-Degenerate Problem and the Sub-Optimality of Empowerment Strategies}
-Here we define the family of smallest non-degenerate intrinsic motivation problems, and demonstrate that in this family, there exists members for which empowerment maximization yields irrational decisions.
+Here we define the family of smallest non-degenerate intrinsic motivation problems, and demonstrate that in this family, there exists members for which empowerment maximization yields distinct behaviour from expected reward maximization.
 
 Let $\Ss=\{0,1\}$, $A_p=\left[\begin{matrix} p_0 & 1-p_0 \\ p_1 & 1-p_1\end{matrix}\right]$, and $A_q=\left[\begin{matrix} q_0 & 1-q_0 \\ q_1 & 1-q_1\end{matrix}\right]$. Let $\omega_u$ be the action distribution which selects action $a_p$ with probability $u$ and $a_q$ with probability $(1-u)$. When an action, $a_\star$, is taken the actor transitions according to the corresponding Markov kernel, $A_\star$. Let $\Omega=\{\omega_u:u\in[0,1]\}$. Suppose the goal state is chosen uniformly from $\Ss$. The uniformity of goals is considered a simplifying assumption to place expected reward on a closer basis with empowerment, since it treats all states as equal as on would expect empowerment to do.
 
@@ -224,6 +340,54 @@ First one will derive the expected reward optimal strategy. To this end, one fir
 Hence, in this scenario, the expected reward maximizing strategy is to start in the state which has the highest discrepancy between the corresponding possible transition distributions. This is the state that maximizes $\vert p_i-q_i\vert$. This is intuitive as it aims to best associate one action with  each possible goal. 
 
 \subsection{Empowerment-optimal solution}
+The derivation of the empowerment optimal solution is moderately tedious and so is deferred to Appendix A. We state the result below for the reader's convenience. For each state, $i$, the $u$ which maximizes the mutual information is 
+\[u^\star_i=\frac{1-q_i-\text{logistic}\left(\frac{H_{p_i}-H_{q_i}}{p_i-q_i}\right)}{p_i-q_i} \]
+where $H_z=-z\log z - (1-z)\log(1-z)$ for all $z\in (0,1)$. 
+\subsection{Sub-optimality example}
+For empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes two counter examples to this. The first example was found by trial and error, and the second example was found by searching for the locally maximal performance gap when initialized from the first example. 
+
+\subsubsection{Example 1}
+Suppose $p_0=1$, $q_0=\frac{1}{2}$, $p_1=\frac{3}{4}$, and $q_1 = \frac{1}{8}$. Then the expected rewards are:
+\begin{align*}
+\Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4}\\
+\Rr(1) &= \frac{1}{2}\left(1+\left(\frac{3}{4}-\frac{1}{8}\right)\right)=\frac{13}{16}
+\end{align*}
+Hence the expected reward optimal strategy is to start in state $1$.
+
+However, according to the above formulae, the empowerments are
+\begin{align*}
+\Ee(0)=0.223143551\\
+\Ee(1)=0.216016789 
+\end{align*}
+Hence the empowerment optimal strategy is to start in state $0$.
+
+\subsubsection{Example 2}
+Searching starting from Example 1, a locally supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$. 
+
+The actual locally supremal gap is not achieved in the search space as the set of cases where one strategy strictly dominates the other with respect to empowerment while being strictly inferior in terms of expected reward is not closed. The limit point corresponding to the suprememum occurs where the empowerment based actor is indifferent between strategies. This is why we have used the term `supremal' as opposed to `maximal' or `optimal' and this is why we have presented a point `near' the local supremum.
+
+These counter examples show that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B). This strategy does not seem rational to the authors and does not seem representative of how `live' actors would behave.
+
+\section{Learning from Experience}
+So far, in our discussion of Expected Reward strategies, we have treated the distribution $\pi$ as being the exact distribution from which rewards are sampled. In reality $\pi$ would begin as a prior for the probabilities of the multinomial random variable representing the reward distribution. The prior would be chosen based on the agent's beliefs about what types of rewards are likely, and may be chosen to be uniform if the agent has no such information. In an episodic framework the posterior distribution would be updated using Bayes Rule at the end of each episode based on which reward was specified, as outlined in figure 4. Though almost immediately obvious that this is the `right' thing to do in the expected reward framework, no analogous action exists in the empowerment framework. 
+
+This process allows us to claim to achieve the desiderata proposed by Schmidhuber with respect to the knowledge of reward functions. The model for the reward system is multinomial with unknown probabilities. The Bayesian posterior calculations are the learning system which updates the model. The intrinsic reward system is the expectation under the posterior distribution of the reward received. The behavioural policy optimizing intrinsic reward is the policy of starting in the state with highest posterior expected reward.
+
+\section{Limitations}
+The discussion of the expected reward framework in this paper is limited to learning the reward system. We have effectively assumed that the transition dynamics are known. In a realistic setting we would need to learn the transition dynamics simultaneously to learning the reward system. This is, for example, the purpose underlying the variational approximation to empowerment in \cite{mohamed2015variational}, and it is the motivation underlying (at least a part of) the internal component of the reward system in \cite{schmidhuber2010formal}. In order for the expected reward framework to be useful, we will need to propose a system analogous to the variational approximation of empowerment. We defer this to a later work.
+
+The problem we have considered involves very simple, `0-1' reward systems which only provide positive reward for a single state. In appendix B we provide a slight generalization of this to rewards which can take on positive values other than 1 (and may be random), but are still restricted to being positive in exactly one state. We defer consideration of more complicated reward systems to future work. 
+
+We believe that the intrinsic motivation system outlined by Schmidhuber in \cite{schmidhuber2010formal} is the most comprehensive we have encountered in our literature review, and acknowledge that it provides a system by which to learn the transition dynamics as well as the reward system.
+
+\section{Conclusions}
+In summation, we have introduced the expected reward framework for intrinsically motivated reinforcement learning, presented it as a Bayesian decision theory problem, and showed that it satisfies the characterizing properties of empowerment as per Salge. We have compared its computational complexity to that of empowerment and found that it is no more costly. We have also shown that it does indeed provide distinct policies to empowerment. Lastly, we have presented a novel way in which to update our model of reward systems allowing it to satisfy the desiderata posed by Schmidhuber. In the future we intend to extend this framework to a larger class of problems than currently considered and to  provide a means by which transition dynamics may be learned alongside the reward system.
+\newpage
+\nocite{*}
+\bibliography{project1}
+\bibliographystyle{ieeetr}
+\newpage
+\section*{Appendix A: Deriving the Empowerment-Optimal Strategy for the Smallest Non-Degenerate Problem}
 One now derives the empowerment optimal strategy; 
 \begin{align*}
 \Ee(i) 
@@ -253,31 +417,8 @@ Thus setting $g'(u^\star)=0$, assuming $p\neq q$ would imply
 \end{align*}
 Since $H$ is a concave function, $g$ is non-negative on [0,1]. Also, $g(0)=g(1)=0$. Hence $g$ is maximized at $u^\star$. If $p=q$ then the empowerment is uniformly $0$.
 
-\subsection{Sub-optimality example}
-For empowerment to be equivalent to expected reward maximization, $g(u^\star)$ would need to be monotone increasing in $|p-q|$. However one establishes two counter examples to this. The first example was found by guess-and-check, and the second example was found by searching for the locally maximal performance gap when initialized from the first example. 
 
-\subsubsection{Example 1}
-Suppose $p_0=1$, $q_0=\frac{1}{2}$, $p_1=\frac{3}{4}$, and $q_1 = \frac{1}{8}$. Then the expected rewards are:
-\begin{align*}
-\Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4}\\
-\Rr(1) &= \frac{1}{2}\left(1+\left(\frac{3}{4}-\frac{1}{8}\right)\right)=\frac{13}{16}
-\end{align*}
-Hence the expected reward optimal strategy is to start in state $1$.
-
-However, according to the above formulae, the empowerments are
-\begin{align*}
-\Ee(0)=0.223143551\\
-\Ee(1)=0.216016789 
-\end{align*}
-Hence the empowerment optimal strategy is to start in state $0$.
-
-\subsubsection{Example 2}
-Searching starting from Example 1, a locally supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$. 
-
-The actual locally supremal gap is not achieved in the search space as the set of cases where one strategy strictly dominates the other with respect to empowerment while being strictly inferior in terms of expected reward is not closed. The limit point corresponding to the suprememum occurs where the empowerment based actor is indifferent between strategies. This is why we have used the term `supremal' as opposed to `maximal' or `optimal' and this is why we have presented a point `near' the local supremum.
-
-These counter examples show that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state (meta-objective A) while ignoring the need to be able to explore a wide variety of states (meta-objective B). This strategy does not seem rational to the authors and does not seem representative of how `live' actors would behave.
-\section{Weighted Objectives}
+\section*{Appendix B: Weighted Objectives}
 The focus of this paper now shifts to non-unit reward systems. One demonstrates that problem of determining the expected reward maximizing strategy for such problems can formulated as an expected reward optimization under a re-weighted distribution of the target state.\vspace{1em}
 
 \begin{theorem}
@@ -296,17 +437,4 @@ Suppose that rewards received for various target states are stochastic. Particul
 Then the optimal strategy in terms of expected reward is equivalent to the optimal expected reward strategy when objectives are drawn from $\tilde{\pi}$ under $0$-$1$ reward.
 \end{theorem}
 The proof is the same as for the above theorem.
-
-
-
-\section{Learning from Experience}
-Suppose now that the distribution of objectives and/or the distribution of rewards are unknown to the actor. 
-One may model the prior beliefs of the actor regarding the post-change-of-measure objective distribution as an $|\Ss|$-dimensional Dirichlet distribution. 
-The actor may sample his Dirichlet prior at each iteration of the game, play according to the optimal generalized empowerment strategy for the sample, then update its prior between each game based on the observed objectives and the observed rewards.
-
-
-\newpage
-\bibliography{project1}
-\bibliographystyle{ieeetr}
-
 \end{document}
