@@ -224,8 +224,8 @@ The problem as posed above may be viewed as the case in this framework where the
 A second generalisation of the problem would involve non-uniform, possibly random rewards. We mention a partial extension to this case in appendix B, where we demonstrate that a sub-class of such problems is effectively equivalent to a game with unit rewards as in the case currently under consideration. 
 
 \subsection{Empowerment}
-The empowerment of $s\in\mathcal{S}$ is defined as the maximum over viable action distributions of the mutual information of action random variable, $A$, and the terminal state random variable, $S_1$.
-\[\Ee(s)=\max_{\omega\in\Omega_s}\Ii(A,S_1|S)=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1|s,A)}{p(S_1|s)}\right] \]
+The empowerment of $s\in\mathcal{S}$ is defined as the maximum mutual information of the action random variable, $A$, and the terminal state random variable, $S_1$, where the maximisation is done over viable action distributions.
+\[\Ee(s)=\max_{\omega\in\Omega_s}\Ii(A,S_1|s)=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1,A|s)}{\omega(A|s)p(S_1|s)}\right]=\max_{\omega\in\Omega_s}\EE\left[\log\frac{p(S_1|s,A)}{p(S_1|s)}\right] \]
 Where the expectation is taken with respect to the joint distribution of the action and the resultant state, $(A,S_1)$, conditional on the starting state, $s$, for a fixed choice of $\omega$ --- the distribution of the action given the starting state. 
 
 \subsubsection{Limitations of the empowerment metric}
@@ -285,18 +285,18 @@ Here we define the family of smallest non-degenerate intrinsic motivation proble
 
 Let $\Ss=\{0,1\}$, $A_p=\left[\begin{matrix} p_0 & 1-p_0 \\ p_1 & 1-p_1\end{matrix}\right]$, and $A_q=\left[\begin{matrix} q_0 & 1-q_0 \\ q_1 & 1-q_1\end{matrix}\right]$. Let $\omega_u$ be the action distribution which selects action $a_p$ with probability $u$ and $a_q$ with probability $(1-u)$. When an action, $a_\star$, is taken the actor transitions according to the corresponding Markov kernel, $A_\star$. Let $\Omega=\{\omega_u:u\in[0,1]\}$. Suppose the goal state is chosen uniformly from $\Ss$. The uniformity of goals is considered a simplifying assumption to place expected reward on a closer basis with empowerment, since it treats all states as equal as on would expect empowerment to do.
 
-This family is considered the smallest non-degenerate group of intrinsic motivation problems because reducing the state space or the action space would yield degenerate problems. In a scenario with a smaller state space there is only one state, any goal is always achieved, and all actions would be identical. In a problem with a smaller action space there is only one action and empowerment is uniformly $0$.. 
+This family is considered the smallest non-degenerate group of intrinsic motivation problems because reducing the state space or the action space would yield degenerate problems. In a scenario with a smaller state space there is only one state, any goal is always achieved, and all actions would be identical. In a problem with a smaller action space there is only one action and empowerment is uniformly $0$.
 
 \subsection{Expected Reward Optimal Solution}
 First one will derive the expected reward optimal strategy. To this end, one first notes that for a fixed initial state, once the goal state is known the actor will move according to the Markov kernel which has higher probability to reach the goal state. If both kernels yield the same probability then the actor is indifferent between them. Let $\Rr(i)$ denote the expected reward when starting in state $i$. Then
 \begin{align*}
 \Rr(i) 
-	&= \frac{1}{2} \max(p_i,q_i) +\frac{1}{2} \max(1-p_i,1-q_i)\\
-	&=\begin{cases}
+	&= \frac{1}{2} \max(p_i,q_i) +\frac{1}{2} \max(1-p_i,1-q_i)
+	=\begin{cases}
 		\frac{1}{2} p_i +\frac{1}{2} (1-q_i) & p_i\geq q_i\\
 		\frac{1}{2} q_i +\frac{1}{2} (1-p_i) & p_i < q_i
-		\end{cases}\\
-	&=\frac{1}{2}(1+\vert p_i - q_i \vert) 	
+		\end{cases}
+	=\frac{1}{2}(1+\vert p_i - q_i \vert) 	
 \end{align*}
 Hence, in this scenario, the expected reward maximising strategy is to start in the state which has the highest discrepancy between the corresponding possible transition distributions. This is the state that maximises $\vert p_i-q_i\vert$. This is intuitive as it aims to best associate one action with  each possible goal. 
 
@@ -313,24 +313,24 @@ would need to be monotone increasing in $|p-q|$. However one establishes two cou
 \subsubsection{Example 1}
 Suppose $p_0=1$, $q_0=\frac{1}{2}$, $p_1=\frac{3}{4}$, and $q_1 = \frac{1}{8}$. Then the expected rewards are:
 \begin{align*}
-\Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4}\\
+\Rr(0) &= \frac{1}{2}\left(1+\left(1-\frac{1}{2}\right)\right)=\frac{3}{4} & 
 \Rr(1) &= \frac{1}{2}\left(1+\left(\frac{3}{4}-\frac{1}{8}\right)\right)=\frac{13}{16}
 \end{align*}
 Hence the expected reward optimal strategy is to start in state $1$.
 
 However, according to the above formulae, the empowerments are
 \begin{align*}
-\Ee(0)=0.223143551\\
-\Ee(1)=0.216016789 
+\Ee(0)&=0.223143551 & 
+\Ee(1)&=0.216016789 
 \end{align*}
 Hence the empowerment optimal strategy is to start in state $0$.
 
 \subsubsection{Example 2}
-Searching starting from Example 1, a locally supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the Expect Reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$. 
+Searching starting from Example 1, a locally supremal gap between the expected reward of the expected reward optimal strategy exists near $p_0=1$, $q_0=0.79$, $p_1=0.70$, and $q_1 = 0.30$, where the expected reward optimal solution is to start in state $1$ and has expected reward $0.70$ and the empowerment optimal strategy is to start in state $0$ and has an expected reward of $0.605$ -- an absolute gap of $9.5\%$ and a relative gap of $13.6\%$. 
 
 The actual locally supremal gap is not achieved in the search space as the set of cases where one strategy strictly dominates the other with respect to empowerment while being strictly inferior in terms of expected reward is not closed. The limit point corresponding to the suprememum occurs where the empowerment based actor is indifferent between strategies. This is why we have used the term `supremal' as opposed to `maximal' or `optimal' and this is why we have presented a point `near' the local supremum.
 
-These counter examples show that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state while ignoring the need to be able to explore a wide variety of states. This strategy does not seem rational to the authors and does not seem representative of how `live' actors would behave.
+These counterexamples show that even in the smallest non-degenerate intrinsically motivated learning problems with a uniform distribution of objectives, there can be material under-performance from empowerment based decision making. Moreover, for the second example, the empowerment strategy is clearly placing too much emphasis on the control of the resultant state while ignoring the need to be able to explore a wide variety of states. This strategy does not seem rational to the authors and does not seem representative of how `live' actors would behave.
 
 \section{Learning from Experience}
 So far, in our discussion of expected reward strategies, we have treated the distribution $\pi$ as being the exact distribution from which rewards are sampled. In reality $\pi$ would begin as a prior for the probabilities of the multinomial random variable representing the random reward scheme. The prior would be chosen based on the agent's beliefs about what types of rewards are likely, and may be chosen to be uniform if the agent has no such information. In an episodic framework the posterior distribution would be updated using Bayes Rule at the end of each episode based on which reward was specified, as outlined in figure 4. Though almost immediately obvious that this is the `right' thing to do in the expected reward framework, no analogous action exists in the empowerment framework. 
@@ -340,7 +340,7 @@ This process allows us to claim to achieve the desiderata proposed by Schmidhube
 \section{Limitations}
 The work as presented here is still in its infancy and is abound with limitations. Among these we highlight the two most glaringly obvious. Firstly, the discussion of the expected reward framework in this paper is limited to learning the reward system. We have effectively assumed that the transition dynamics are known. In a realistic setting we would need to learn the transition dynamics simultaneously to learning the reward system. This is, for example, the purpose underlying the variational approximation to empowerment in \cite{mohamed2015variational}, and it is the motivation underlying (at least a part of) the internal component of the reward system in \cite{schmidhuber2010formal}. In order for the expected reward framework to be useful, we will need to propose a system analogous to the variational approximation of empowerment allowing the learning of transition dynamics, while not preventing the simultaneous approximation of internal reward values. We defer this to a later work.
 
-Secondly, The problem we have considered involves very simple, `0-1' reward systems which only provide positive reward for a single state. In appendix B we provide a slight generalisation of this to rewards which can take on positive values other than 1 (and may be random), but are still restricted to being positive in exactly one state and uniformly 0 elsewhere. We defer consideration of more complicated reward systems to future work. 
+Secondly, the problem we have considered involves very simple, `0-1' reward systems which only provide positive reward for a single state. In appendix B we provide a slight generalisation of this to rewards which can take on positive values other than 1 (and may be random), but are still restricted to being positive in exactly one state and uniformly 0 elsewhere. We defer consideration of more complicated reward systems to future work. 
 
 We believe that the intrinsic motivation system outlined by Schmidhuber in \cite{schmidhuber2010formal} is the most comprehensive we have encountered in our literature review, and acknowledge that it provides a system by which to learn the transition dynamics as well as reward systems.
 
@@ -359,7 +359,7 @@ One now derives the empowerment optimal strategy;
 	&\hspace{5em} + (1-u)q_i \log \frac{q_i}{up_i+(1-u)q_i}\\
 	&\hspace{5em} + u(1-p_i) \log \frac{(1-p_i)}{u(1-p_i)+(1-u)(1-q_i)}\\
 	&\hspace{5em} + (1-u)(1-q_i) \log \frac{(1-q_i)}{u(1-p_i)+(1-u)(1-q_i)}\bigg]\\
-	&=-uH_{p_i}-(1-u)H_{q_i}+H_{q_i+u(p_i-q_i)}
+	&=\max_{u\in [0,1]}\left(-uH_{p_i}-(1-u)H_{q_i}+H_{q_i+u(p_i-q_i)}\right)
 \end{align*}
 where $H_z=-z\log z - (1-z)\log(1-z)$ for all $z\in (0,1)$. To determine the maximum, we define 
 \begin{align*}
